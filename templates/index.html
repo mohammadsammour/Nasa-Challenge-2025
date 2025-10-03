@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <title>CosmoCore</title>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <a href="#" class="logo">CosmoCore</a>
+            <a href="#analyze">Analyze</a>
+        </div>
+    </header>  
+
+    <main>
+        <section class="landing" id="story">
+            <div class="txt">
+                <h2>Exoplanet Detector</h2>
+                <p>Powered by CosmoCore team</p>
+                <button><a href="#analyze">Start Analyzing</a></button>
+            </div>
+        </section>
+        <section class="analyze" id="analyze">
+            <div class="container">
+                <h2>Fill planet Details</h2>
+                <form id="planet-form" action="/predict" method="POST">
+                <div>
+                    <label for="dec">dec:</label>
+                    <input type="text" id="dec" name="dec" required>
+                </div>
+                <div>
+                    <label for="st_pmdec">st_pmdec:</label>
+                    <input type="text" id="st_pmdec" name="st_pmdec" required>
+                </div>
+                <div>
+                    <label for="pl_tranmid">pl_tranmid:</label>
+                    <input type="text" id="pl_tranmid" name="pl_tranmid" required>
+                </div>
+                <div>
+                    <label for="pl_tranmiderr1">pl_tranmiderr1:</label>
+                    <input type="text" id="pl_tranmiderr1" name="pl_tranmiderr1" required>
+                </div>
+                <div>
+                    <label for="pl_orbper">pl_orbper:</label>
+                    <input type="text" id="pl_orbper" name="pl_orbper" required>
+                </div>
+                <div>
+                    <label for="pl_orbpererr1">pl_orbpererr1:</label>
+                    <input type="text" id="pl_orbpererr1" name="pl_orbpererr1" required>
+                </div>
+                <div>
+                    <label for="pl_trandurh">pl_trandurh:</label>
+                    <input type="text" id="pl_trandurh" name="pl_trandurh" required>
+                </div>
+                <div>
+                    <label for="pl_trandurherr1">pl_trandurherr1:</label>
+                    <input type="text" id="pl_trandurherr1" name="pl_trandurherr1" required>
+                </div>
+                <div>
+                    <label for="pl_trandep">pl_trandep:</label>
+                    <input type="text" id="pl_trandep" name="pl_trandep" required>
+                </div>
+                <div>
+                    <label for="pl_trandeperr1">pl_trandeperr1:</label>
+                    <input type="text" id="pl_trandeperr1" name="pl_trandeperr1" required>
+                </div>
+                <div>
+                    <label for="pl_rade">pl_rade:</label>
+                    <input type="text" id="pl_rade" name="pl_rade" required>
+                </div>
+                <div>
+                    <label for="pl_radeerr1">pl_radeerr1:</label>
+                    <input type="text" id="pl_radeerr1" name="pl_radeerr1" required>
+                </div>
+                <div>
+                    <label for="pl_insol">pl_insol:</label>
+                    <input type="text" id="pl_insol" name="pl_insol" required>
+                </div>
+                <div>
+                    <label for="pl_eqt">pl_eqt:</label>
+                    <input type="text" id="pl_eqt" name="pl_eqt" required>
+                </div>
+                <div>
+                    <label for="st_tmag">st_tmag:</label>
+                    <input type="text" id="st_tmag" name="st_tmag" required>
+                </div>
+                <div>
+                    <label for="st_dist">st_dist:</label>
+                    <input type="text" id="st_dist" name="st_dist" required>
+                </div>
+                <div>
+                    <label for="st_disterr1">st_disterr1:</label>
+                    <input type="text" id="st_disterr1" name="st_disterr1" required>
+                </div>
+                <div>
+                    <label for="st_tefferr1">st_tefferr1:</label>
+                    <input type="text" id="st_tefferr1" name="st_tefferr1" required>
+                </div>
+                <div><input type="submit" value="SUBMIT"></div>
+                </form>
+                <div id="result-box" class="hidden">
+                    <h3>Prediction Result:</h3>
+                    <p id="result-text"></p>
+                </div>
+            </div>
+        </section>
+    </main>
+    <footer>
+        <div class="container">
+            <p>Copyrights reserved &copy; <span>CosmoCore</span></p>
+        </div>
+    </footer>
+    <script>
+        const labelMap = {
+            0: "APC",
+            1: "CP",
+            2: "FA",
+            3: "FP",
+            4: "KP",
+            5: "PC"
+        };
+
+    document.getElementById('planet-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+
+    const formData = new FormData(this);
+
+    fetch('/predict', {
+        method: 'POST',
+        body: formData
+    })
+    .then(res => res.json())
+    .then(data => {
+        const resultBox = document.getElementById('result-box');
+        const resultText = document.getElementById('result-text');
+
+        if (data.prediction) {
+            const rawValue = parseInt(data.prediction);
+            const label = labelMap[rawValue] || "Unknown";
+
+            resultText.textContent = `🚀 Predicted Class: ${label} (Class ID: ${rawValue})`;
+            resultBox.className = "success";
+            resultBox.classList.remove('hidden');
+        } else {
+            resultText.textContent = "❌ Error: " + data.error;
+            resultBox.className = "error";
+            resultBox.classList.remove('hidden');
+        }
+    });
+});
+</script>
+</body>
+</html>
